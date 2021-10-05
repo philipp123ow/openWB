@@ -1,3 +1,9 @@
+# Abweichungen zu snaptec:
+- Go-e-Simulation (PR #1559)
+- Modifizierte Updatepfade
+- Manual SOC LP1
+
+
 # openWB
 
 
