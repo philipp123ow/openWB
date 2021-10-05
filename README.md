@@ -1,7 +1,7 @@
 # Abweichungen zu snaptec:
 - Go-e-Simulation (PR #1559)
-- Modifizierte Updatepfade
-- Manual SOC LP1
+- Modifizierte Updatepfade (Nur nötig, um noch nicht gemergte Ändeurnngen nicht ständig zu überschreiben)
+- Manual SOC LP1 (Unklar, ob fix überhaupt nötig)
 
 
 # openWB
