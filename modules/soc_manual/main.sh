@@ -90,18 +90,7 @@ else
 			echo $manualSoc > $manualSocFile
 		fi
 		openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: manual SoC: $manualSoc"
-
-		# read manualMeterFile if file exists and manualMeterFile is newer than manualSocFile
-		if [[ -f "$manualMeterFile" ]] && [ "$manualMeterFile" -nt "$manualSocFile" ]; then
-			manualMeter=$(<$manualMeterFile)
-		else
-			# manualMeterFile does not exist or is outdated
-			# update manualMeter with currentMeter
-			manualMeter=$currentMeter
-			echo $manualMeter > $manualMeterFile
-		fi
-		openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: manualMeter: $manualMeter"
-
+		
 		# read current soc
 		if [[ -f "$socFile" ]]; then
 			currentSoc=$(<$socFile)
@@ -110,6 +99,23 @@ else
 			echo $currentSoc > $socFile
 		fi
 		openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: currentSoc: $currentSoc"
+
+		# read manualMeterFile if file exists and manualMeterFile is newer than manualSocFile
+		if [[ -f "$manualMeterFile" ]] && [ "$manualMeterFile" -nt "$manualSocFile" ]; then
+			manualMeter=$(<$manualMeterFile)
+		else
+			# There are cases the else arrives without entering new Man. SOC. Reason unknown. In this case current soc and man soc is different.
+			# Without the next row every time this happens SOC jumps back to last entered man. soc.
+			if [[ $currentSOC > 0 ]]; then
+				manualSoc=$currentSoc;
+				echo $manualSoc > $manualSocFile
+			fi
+			# manualMeterFile does not exist or is outdated
+			# update manualMeter with currentMeter
+			manualMeter=$currentMeter
+			echo $manualMeter > $manualMeterFile
+		fi
+		openwbDebugLog ${DMOD} 1 "Lp$CHARGEPOINT: manualMeter: $manualMeter"
 
 		# calculate newSoc
 		currentMeterDiff=$(echo "scale=5;$currentMeter - $manualMeter" | bc)
