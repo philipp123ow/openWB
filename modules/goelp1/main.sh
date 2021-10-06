@@ -5,7 +5,6 @@ rekwh='^[-+]?[0-9]+\.?[0-9]*$'
 output=$(curl --connect-timeout $goetimeoutlp1 -s http://$goeiplp1/status)
 if [[ $? == "0" ]] ; then
 	goecorrectionfactor=$(echo "scale=0;$goecorrectionfactorlp1 * 100000 /1" |bc)
-    echo $goecorrectionfactor > /var/www/html/openWB/ramdisk/goecorrectionlp1
 	watt=$(echo $output | jq -r '.nrg[11]')
 	watt=$(echo "scale=0;$watt * 10 /1" |bc)
 	if [[ $watt =~ $re ]] ; then
@@ -97,7 +96,4 @@ if [[ $? == "0" ]] ; then
 		echo 0 > /var/www/html/openWB/ramdisk/chargestat
 	fi
 
-    lastseen=$(date +"%d.%m.%Y %H:%M:%S")
-	echo $lastseen >/var/www/html/openWB/ramdisk/goelp1lastcontact
-    mosquitto_pub -t openWB/lp/1/lastSeen -r -m "$lastseen"
 fi
