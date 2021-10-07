@@ -2,6 +2,7 @@
 - Go-e-Simulation (PR #1559)
 - Modifizierte Updatepfade (Nur nötig, um noch nicht gemergte Änderungen nicht ständig zu überschreiben)
 - Manual SOC LP1 (Unklar, ob fix überhaupt nötig)
+- Variable Hilfetexte (PR #1541)
 
 
 # openWB
