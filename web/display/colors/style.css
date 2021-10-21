@@ -51,6 +51,7 @@ body {
     /* Permalink - use to edit and share this gradient: https://colorzilla.com/gradient-editor/#5a5a5a+0,0e0e0e+100;Black+3D */
     /* Old browsers */
     background: var(--color-bg);;
+    font-family:Arial, Helvetica, sans-serif
     
 }
 body {
@@ -70,12 +71,12 @@ h3 {
     color: #ffffff;
 }
 .btn-block {
-    font-size: 22px;
+    font-size: 16px;
 }
 .card {
     background-color: rgba(0, 0, 0, 0)!important;
     /*border-color: rgba(0, 0, 0, 0);*/
-    font-size: 18px;
+    font-size: 16px;
     border: 0px!important;
 }
 .card-body {
@@ -137,7 +138,7 @@ hr {
 .modal-header,
 .modal-footer {
     border-color: dimgrey;
-    font-size: 2rem;
+    font-size: 1.5em;
 }
 
 .modal-content label {
@@ -474,10 +475,16 @@ h3 {
 }
 
 .chargePointData {
-    font-size: 16px;
+    font-size: 15px;
 }
 
 .display-button {
     font-size: 16px;
     padding: 9px;
+}
+
+
+.status-header,.status-title {
+    text-align: center;
+    font-size: 1em;
 }
