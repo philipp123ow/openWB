@@ -82,8 +82,6 @@ if [[ $? == "0" ]] ; then
 		fi
 	fi
 	
-	
-	
 	#car status 1 Ladestation bereit, kein Auto
 	#car status 2 Auto lädt
 	#car status 3 Warte auf Fahrzeug

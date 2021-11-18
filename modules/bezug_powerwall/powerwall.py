@@ -20,7 +20,7 @@ speicherpwip = str(sys.argv[5])
 ramdiskdir = base_dir+"/ramdisk"
 module = "EVU"
 logfile = ramdiskdir+"/openWB.log"
-cookie_file = ramdiskdir+"/powerwall_cookie.txt"
+cookie_file = ramdiskdir+"/powerwall_bezug_cookie.txt"
 cookie = ""
 
 
@@ -58,7 +58,7 @@ if speicherpwloginneeded == 1:
         edited = os.stat(cookie_file).st_mtime
         now = time.time()
         edit_diff = now - edited
-        if edit_diff < 3600:
+        if edit_diff > 3600:
             DebugLog("Deleting saved login cookie after 1 hour as it may not be valid anymore.")
             os.remove(cookie_file)
     if os.path.isfile(cookie_file) == False:
@@ -79,8 +79,9 @@ if speicherpwloginneeded == 1:
                 f.write(str(requests.utils.dict_from_cookiejar(cookie)))
     else:
         DebugLog("Using saved login cookie.")
-    with open(cookie_file, "r") as f:
-        cookie = f.read()
+        with open(cookie_file, "r") as f:
+            # cookie = f.read()
+            cookie = requests.utils.cookiejar_from_dict(f.read())
 
 answer = requests.get("https://"+speicherpwip+"/api/meters/aggregates", cookies = cookie, verify=False, timeout=5).json()
 try:
