@@ -92,4 +92,8 @@ if [[ $? == "0" ]] ; then
 	else
 		echo 0 > /var/www/html/openWB/ramdisk/chargestats1
 	fi
+	
+	lastseen=$(date +"%d.%m.%Y %H:%M:%S")
+	echo $lastseen >/var/www/html/openWB/ramdisk/goelp2lastcontact
+    	mosquitto_pub -t openWB/lp/2/lastSeen -r -m "$lastseen"
 fi
