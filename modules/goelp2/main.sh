@@ -5,6 +5,7 @@ rekwh='^[-+]?[0-9]+\.?[0-9]*$'
 output=$(curl --connect-timeout $goetimeoutlp2 -s http://$goeiplp2/status)
 if [[ $? == "0" ]] ; then
 	goecorrectionfactor=$(echo "scale=0;$goecorrectionfactorlp2 * 100000 /1" |bc)
+	echo $goecorrectionfactor > /var/www/html/openWB/ramdisk/goecorrectionlp2
 	watt=$(echo $output | jq -r '.nrg[11]')
 	watt=$(echo "scale=0;$watt * 10 /1" |bc)
 	if [[ $watt =~ $re ]] ; then
