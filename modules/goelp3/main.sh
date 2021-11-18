@@ -45,6 +45,12 @@ if [[ $? == "0" ]] ; then
 	fi
 	llkwh=$(echo $output | jq -r '.eto')
 	llkwh=$(echo "scale=3;$llkwh / 10" |bc)
+	rfid=$(echo $output | jq -r '.uby')
+	oldrfid=$(</var/www/html/openWB/ramdisk/tmpgoelp3rfid)
+	if [[ $rfid != $oldrfid ]] ; then
+		echo $rfid > /var/www/html/openWB/ramdisk/readtag
+		echo $rfid > /var/www/html/openWB/ramdisk/tmpgoelp3rfid
+	fi
 	if [[ $goesimulationlp3 == "0" ]] ; then
 		if [[ $llkwh =~ $rekwh ]] ; then
 			echo $llkwh > /var/www/html/openWB/ramdisk/llkwhs2
