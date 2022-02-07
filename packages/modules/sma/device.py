@@ -17,7 +17,8 @@ def get_default_config() -> dict:
     return {
         "name": "SMA Smarthome Manager",
         "type": "sma",
-        "id": 0
+        "id": 0,
+        "configuration": {}
     }
 
 
@@ -100,6 +101,9 @@ def read_legacy(component_type: str, serials: Optional[str] = None, num: Optiona
             ','.join(COMPONENT_TYPE_TO_MODULE.keys())
         )
     component_config["id"] = num
+    # serials-Feld kann auch leer bleiben
+    if serials == "":
+        serials = None
     component_config["configuration"]["serials"] = serials
     dev.add_component(component_config)
 
