@@ -23,6 +23,10 @@ updateConfig(){
 	if ! grep -Fq "smaemdbezugid=" $ConfigFile; then
 		echo "smaemdbezugid=1900123456" >> $ConfigFile
 	fi
+	# upgrade after renaming "smaemd_pv" -> "wr_smashm"
+	if grep -Fq "pvwattmodul=smaemd_pv" $ConfigFile; then
+		sed -i "s/^pvwattmodul=smaemd_pv/pvwattmodul=wr_smashm/g" $ConfigFile
+	fi
 	if ! grep -Fq "smaemdpvid=" $ConfigFile; then
 		echo "smaemdpvid=1900123456" >> $ConfigFile
 	fi
@@ -504,6 +508,12 @@ updateConfig(){
 	fi
 	if ! grep -Fq "soc_tesla_intervall=" $ConfigFile; then
 		echo "soc_tesla_intervall=20" >> $ConfigFile
+	fi
+	if ! grep -Fq "soc_id_intervallladen=" $ConfigFile; then
+		echo "soc_id_intervallladen=20" >> $ConfigFile
+	fi
+	if ! grep -Fq "soc_id_intervall=" $ConfigFile; then
+		echo "soc_id_intervall=120" >> $ConfigFile
 	fi
 	if ! grep -Fq "releasetrain=" $ConfigFile; then
 		echo "releasetrain=stable" >> $ConfigFile
@@ -2181,5 +2191,16 @@ updateConfig(){
 		echo "pv2flexid=1" >> $ConfigFile
 		echo "pv2flexversion=1" >> $ConfigFile
 	fi
+	if ! grep -Fq "soc_aiways_user=" $ConfigFile; then
+		echo "soc_aiways_user=''" >> $ConfigFile
+		echo "soc_aiways_pass=''" >> $ConfigFile
+		echo "soc_aiways_vin=''" >> $ConfigFile
+		echo "soc_aiways_intervall=''" >> $ConfigFile
+		echo "soc_aiwayslp2_user=''" >> $ConfigFile
+		echo "soc_aiwayslp2_pass=''" >> $ConfigFile
+		echo "soc_aiwayslp2_vin=''" >> $ConfigFile
+		echo "soc_aiwayslp2_intervall=''" >> $ConfigFile
+	fi
+
 	echo "Config file Update done."
 }
