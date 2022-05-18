@@ -4,10 +4,12 @@ import requests_mock
 from unittest.mock import Mock
 
 from modules.common.simcount import SimCountLegacy
+from modules.common.store._api import LoggingValueStore
 from modules.fronius import counter_sm, device
-from modules.fronius.meter import MeterLocation
 from helpermodules import compatibility
 from test_utils.mock_ramdisk import MockRamdisk
+
+SAMPLE_IP = "1.1.1.1"
 
 
 @pytest.fixture
@@ -20,16 +22,21 @@ def test_update_grid(monkeypatch, requests_mock: requests_mock.Mocker, mock_ramd
     component_config = counter_sm.get_default_config()
     assert component_config["configuration"]["variant"] == 0
     device_config = device.get_default_config()["configuration"]
-    assert device_config["meter_id"] == 0
+    device_config["ip_address"] = SAMPLE_IP
+    assert component_config["configuration"]["meter_id"] == 0
     counter = counter_sm.FroniusSmCounter(0, component_config, device_config)
 
+    mock = Mock(return_value=None)
+    monkeypatch.setattr(LoggingValueStore, "set", mock)
     monkeypatch.setattr(SimCountLegacy, "sim_count", Mock(return_value=[0, 0]))
     requests_mock.get(
-        "http://" + device_config["ip_address"] + "/solar_api/v1/GetMeterRealtimeData.cgi",
+        "http://" + SAMPLE_IP + "/solar_api/v1/GetMeterRealtimeData.cgi",
         json=json_grid)
 
-    counter_state, meter_location = counter.update()
+    counter.update()
 
+    # mock.assert_called_once()
+    counter_state = mock.call_args[0][0]
     assert counter_state.exported == 0
     assert counter_state.imported == 0
     assert counter_state.currents == [0.4339647008179079, 1.3994802944997833, 0.5339012669287898]
@@ -38,24 +45,28 @@ def test_update_grid(monkeypatch, requests_mock: requests_mock.Mocker, mock_ramd
     assert counter_state.powers == [100.81, 323.14, 122.21]
     assert counter_state.power_factors == [0.57, 0.74, 0.47]
     assert counter_state.voltages == [232.3, 230.9, 228.9]
-
-    assert meter_location == MeterLocation.grid
+    assert counter_state.power == sum(counter_state.powers)
 
 
 def test_update_grid_var2(monkeypatch, requests_mock: requests_mock.Mocker, mock_ramdisk):
     component_config = counter_sm.get_default_config()
     component_config["configuration"]["variant"] = 2
     device_config = device.get_default_config()["configuration"]
-    assert device_config["meter_id"] == 0
+    device_config["ip_address"] = SAMPLE_IP
+    assert component_config["configuration"]["meter_id"] == 0
     counter = counter_sm.FroniusSmCounter(0, component_config, device_config)
 
+    mock = Mock(return_value=None)
+    monkeypatch.setattr(LoggingValueStore, "set", mock)
     monkeypatch.setattr(SimCountLegacy, "sim_count", Mock(return_value=[0, 0]))
     requests_mock.get(
-        "http://" + device_config["ip_address"] + "/solar_api/v1/GetMeterRealtimeData.cgi",
+        "http://" + SAMPLE_IP + "/solar_api/v1/GetMeterRealtimeData.cgi",
         json=json_grid_var2)
 
-    counter_state, meter_location = counter.update()
+    counter.update()
 
+    # mock.assert_called_once()
+    counter_state = mock.call_args[0][0]
     assert counter_state.exported == 0
     assert counter_state.imported == 0
     assert counter_state.currents == [-2.777267315214871, -6.06216401684521, -5.903017198144055]
@@ -65,23 +76,26 @@ def test_update_grid_var2(monkeypatch, requests_mock: requests_mock.Mocker, mock
     assert counter_state.power_factors == [-0.998, -0.998, -0.999]
     assert counter_state.voltages == [232.3, 231.5, 233.4]
 
-    assert meter_location == MeterLocation.grid
-
 
 def test_update_external_var2(monkeypatch, requests_mock: requests_mock.Mocker, mock_ramdisk):
     component_config = counter_sm.get_default_config()
     component_config["configuration"]["variant"] = 2
     device_config = device.get_default_config()["configuration"]
-    device_config["meter_id"] = 1
+    device_config["ip_address"] = SAMPLE_IP
+    component_config["configuration"]["meter_id"] = 1
     counter = counter_sm.FroniusSmCounter(0, component_config, device_config)
 
+    mock = Mock(return_value=None)
+    monkeypatch.setattr(LoggingValueStore, "set", mock)
     monkeypatch.setattr(SimCountLegacy, "sim_count", Mock(return_value=[0, 0]))
     requests_mock.get(
-        "http://" + device_config["ip_address"] + "/solar_api/v1/GetMeterRealtimeData.cgi",
+        "http://" + SAMPLE_IP + "/solar_api/v1/GetMeterRealtimeData.cgi",
         json=json_ext_var2)
 
-    counter_state, meter_location = counter.update()
+    counter.update()
 
+    # mock.assert_called_once()
+    counter_state = mock.call_args[0][0]
     assert counter_state.exported == 0
     assert counter_state.imported == 0
     assert counter_state.currents == [-5.373121093182142, -5.664436188811191, -5.585225225225224]
@@ -91,37 +105,39 @@ def test_update_external_var2(monkeypatch, requests_mock: requests_mock.Mocker, 
     assert counter_state.power_factors == [0.643, 0.68, 0.667]
     assert counter_state.voltages == [229.3, 228.8, 229.4]
 
-    assert meter_location == MeterLocation.external
-
 
 def test_update_load(monkeypatch, requests_mock: requests_mock.Mocker, mock_ramdisk):
     component_config = counter_sm.get_default_config()
     assert component_config["configuration"]["variant"] == 0
     device_config = device.get_default_config()["configuration"]
-    device_config["meter_id"] = 2
+    device_config["ip_address"] = SAMPLE_IP
+    component_config["configuration"]["meter_id"] = 2
     counter = counter_sm.FroniusSmCounter(0, component_config, device_config)
 
+    mock = Mock(return_value=None)
+    monkeypatch.setattr(LoggingValueStore, "set", mock)
     monkeypatch.setattr(SimCountLegacy, "sim_count", Mock(return_value=[0, 0]))
     requests_mock.get(
-        "http://" + device_config["ip_address"] + "/solar_api/v1/GetMeterRealtimeData.cgi",
+        "http://" + SAMPLE_IP + "/solar_api/v1/GetMeterRealtimeData.cgi",
         json=json_load_meter)
 
     requests_mock.get(
-        "http://" + device_config["ip_address"] + "/solar_api/v1/GetPowerFlowRealtimeData.fcgi",
+        "http://" + SAMPLE_IP + "/solar_api/v1/GetPowerFlowRealtimeData.fcgi",
         json=json_load_power)
 
-    counter_state, meter_location = counter.update()
+    counter.update()
 
+    # mock.assert_called_once()
+    counter_state = mock.call_args[0][0]
     assert counter_state.exported == 0
     assert counter_state.imported == 0
-    assert counter_state.currents == [-0.5803465765004227, -0.059532908704883224, -0.6287537218205019]
+    assert counter_state.currents == [-1.3272330233868694, -1.8569568294409058, -1.2909967389763222]
     assert counter_state.frequency == 50
     assert counter_state.power == -1059.03
-    assert counter_state.powers == [-137.31, -14.02, -147.82]
+    assert counter_state.powers == [-314.0233333333333, -437.31333333333333, -303.5133333333333]
     assert counter_state.power_factors == [0.79, 0.42, 0.84]
     assert counter_state.voltages == [236.6, 235.5, 235.1]
-
-    assert meter_location == MeterLocation.load
+    assert abs(counter_state.power - sum(counter_state.powers)) < 5
 
 
 json_grid = {

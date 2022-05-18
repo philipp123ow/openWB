@@ -66,9 +66,11 @@
 									<option <?php if($speichermodulold == "none") echo "selected" ?> value="none">Nicht vorhanden</option>
 									<optgroup label="openWB">
 										<option <?php if($speichermodulold == "speicher_mpm3pm") echo "selected" ?> value="speicher_mpm3pm">openWB Speicher Kit</option>
+										<option <?php if($speichermodulold == "speicher_sdmaevu") echo "selected" ?> value="speicher_sdmaevu">Zähler an openWB EVU Kit</option>
 									</optgroup>
 									<optgroup label="andere Hersteller">
 										<option <?php if($speichermodulold == "speicher_alphaess") echo "selected" ?> value="speicher_alphaess">Alpha ESS</option>
+										<option <?php if($speichermodulold == "speicher_batterx") echo "selected" ?> value="speicher_batterx">BatterX</option>
 										<option <?php if($speichermodulold == "speicher_bydhv") echo "selected" ?> value="speicher_bydhv">BYD</option>
 										<option <?php if($speichermodulold == "speicher_e3dc") echo "selected" ?> value="speicher_e3dc">E3DC Speicher</option>
 										<option <?php if($speichermodulold == "speicher_good_we") echo "selected" ?> value="speicher_good_we">GoodWe</option>
@@ -145,7 +147,7 @@
 										<select name="speicherkitversion" id="speicherkitversion" class="form-control">
 											<option <?php if($speicherkitversionold == 0) echo "selected" ?> value="0">Dreiphasig (MPM3PM)</option>
 											<option <?php if($speicherkitversionold == 1) echo "selected" ?> value="1">Einphasig (SDM120)</option>
-											<option <?php if($speicherkitversionold == 2) echo "selected" ?> value="2">SDM630 an EVU Kit angeschlossen</option>
+											<option <?php if($speicherkitversionold == 2) echo "selected" ?> value="2">Dreiphasig (SDM630/72)</option>
 										</select>
 									</div>
 								</div>
@@ -361,17 +363,22 @@
 								<div class="form-row mb-1">
 									<label for="alphaip" class="col-md-4 col-form-label">IP-Adresse</label>
 									<div class="col">
-										<input class="form-control" type="text" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$" name="alphaip" id="alphaip" value="<?php echo $alphaessipold ?>">
+										<input class="form-control" type="text" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$" name="alphaip" id="alphaip" value="<?php echo $alphaipold ?>">
 										<span class="form-text small">Gültige Werte IP Adresse im Format: 192.168.0.12. Die Abfrage erfolgt an Port 502.</span>
 									</div>
 								</div>
 							</div>
 						</div>
 
-
 						<div id="divspeichergoodwe" class="hide">
 							<div class="card-text alert alert-info">
 								Konfiguration im Wechselrichter
+							</div>
+						</div>
+						
+						<div id="divspeicherbatterx" class="hide">
+							<div class="alert alert-info">
+								Konfiguration im Bezug BatterX Modul.
 							</div>
 						</div>
 
@@ -518,10 +525,11 @@
 								<div class="form-row mb-1">
 									<label for="solaredgespeicherip" class="col-md-4 col-form-label">IP Adresse</label>
 									<div class="col">
-										<input class="form-control" type="text" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$" name="solaredgespeicherip" id="solaredgespeicherip" value="<?php echo $solaredgespeicheripold ?>">
+										<input class="form-control" type="text" pattern="^((\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.){3}(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])(:[1-9][0-9]*)?$" name="solaredgespeicherip" id="solaredgespeicherip" value="<?php echo $solaredgespeicheripold ?>">
 										<span class="form-text small">
-											Gültige Werte IP Adresse im Format: 192.168.0.12<br>
-											IP Adresse des Solaredge Wechselrichters an dem der Speicher angeschlossen ist.
+											Gültige Werte IP Adresse im Format: 192.168.0.12<br />
+											IP Adresse des Solaredge Wechselrichters an dem der Speicher angeschlossen ist.<br />
+											Optional kann ein benutzerdefinierter Port angegeben werden: <span class="text-danger">IP:Port</span>. Ohne eine Angabe wird Port 502 genutzt. Häufig sind Geräte von Solaredge jedoch mit dem Port 1502 vorkonfiguriert!
 										</span>
 									</div>
 								</div>
@@ -732,6 +740,7 @@
 								hideSection('#divspeicheralphaessip');
 								hideSection('#divspeicheralphaess');
 								hideSection('#divspeichergoodwe');
+								hideSection('#divspeicherbatterx');
 								hideSection('#divspeichervictron');
 								hideSection('#divspeicherstuder');
 								hideSection('#divspeicherlgessv1');
@@ -788,6 +797,9 @@
 										hideSection('#divspeicheralphaessfw');
 									}
 								}
+								if($('#speichermodul').val() == 'speicher_batterx') {
+									showSection('#divspeicherbatterx');
+								}
 								if($('#speichermodul').val() == 'speicher_mqtt') {
 									showSection('#divspeichermqtt');
 								}
@@ -802,6 +814,9 @@
 									showSection('#divspeicherstuder');
 								}
 								if($('#speichermodul').val() == 'speicher_mpm3pm') {
+									showSection('#divspeicherkit');
+								}
+								if($('#speichermodul').val() == 'speicher_sdmaevu') {
 									showSection('#divspeicherkit');
 								}
 								if($('#speichermodul').val() == 'speicher_sonneneco') {

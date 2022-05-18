@@ -1540,9 +1540,6 @@ updateConfig(){
 	if ! grep -Fq "soc_zeronglp2_intervall=" $ConfigFile; then
 		echo "soc_zeronglp2_intervall=20" >> $ConfigFile
 	fi
-	if ! grep -Fq "alphaessip=" $ConfigFile; then
-		echo "alphaessip=192.168.193.31" >> $ConfigFile
-	fi
 	if ! grep -Fq "solarview_hostname=" $ConfigFile; then
 		echo "solarview_hostname=192.168.0.31" >> $ConfigFile
 	fi
@@ -2266,6 +2263,9 @@ updateConfig(){
 	fi
 	if ! grep -Fq "good_we_id=" $ConfigFile; then
 		echo "good_we_id=247" >> $ConfigFile
+	fi
+	if ! grep -Fq "batterx_ip=" $ConfigFile; then
+		echo "batterx_ip=192.168.0.17" >> $ConfigFile
 	fi
 	if grep -Fq "socmodul=soc_bluelink" $ConfigFile; then
 		sed -i "s/^socmodul=soc_bluelink/socmodul=soc_kia/g" $ConfigFile
