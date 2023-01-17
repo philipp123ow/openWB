@@ -26,6 +26,7 @@ class WbData {
 		this.batteryPowerImport = 0;
 		this.chargeMode = "0"
 		this.graphDate = new Date();
+		this.graphYear = this.graphDate.getFullYear();
 		this.graphMonth = {
 			"month": this.graphDate.getMonth(),
 			"year": this.graphDate.getFullYear()
@@ -70,6 +71,8 @@ class WbData {
 		this.decimalPlaces = 1;
 		this.smartHomeColors = "normal";
 		this.smartHomeSummary = true;
+		this.preferWideBoxes = false;
+		this.preferredLayout = 'dynamic';
 		this.prefs = {};
 	};
 
@@ -148,6 +151,7 @@ class WbData {
 				this.persistGraphPreferences();
 				break;
 		}
+		setWidgetWidth()
 	}
 
 	updateEvu(field, value) {
@@ -371,6 +375,8 @@ class WbData {
 		this.prefs.decimalP = this.decimalPlaces;
 		this.prefs.smartHomeC = this.smartHomeColors;
 		this.prefs.smartHomeSum = this.smartHomeSummary;
+		this.prefs.wideBoxes = this.preferWideBoxes;
+		this.prefs.layout = this.preferredLayout;
 		document.cookie = "openWBColorTheme=" + JSON.stringify(this.prefs) + "; max-age=16000000";
 	}
 	// read cookies and update settings
@@ -409,6 +415,12 @@ class WbData {
 			if ('smartHomeSum' in this.prefs) {
 				this.smartHomeSummary = this.prefs.smartHomeSum;
 			}
+			if ('wideBoxes' in this.prefs) {
+				this.preferWideBoxes = this.prefs.wideBoxes;
+			}
+			if ('layout' in this.prefs) {
+				this.preferredLayout = this.prefs.layout;
+			}
 		}
 	}
 	dayGraphUpdated() {
@@ -417,10 +429,10 @@ class WbData {
 	monthGraphUpdated() {
 		yieldMeter.update();
 	}
-
-
+	yearGraphUpdated() {
+		yieldMeter.update();
+	}
 }
-
 
 class Consumer {
 	constructor(name = "", power = 0, dailyYield = 0, configured = false, color = "white") {
@@ -463,7 +475,10 @@ class SHDevice {
 
 function formatWatt(watt) {
 	let wattResult;
-	if (watt >= 1000 && wbdata.decimalPlaces < 4) {
+	if (watt > 1000000) {
+		wattResult = (Math.round(watt / 10000) / 100)
+		return (wattResult.toLocaleString(undefined, { minimumFractionDigits: 2 }) + " MW");
+	} else if (watt >= 1000 && wbdata.decimalPlaces < 4) {
 		switch (wbdata.decimalPlaces) {
 			case 0:
 				wattResult = Math.round(watt / 1000);
@@ -488,7 +503,11 @@ function formatWatt(watt) {
 }
 
 function formatWattH(watt) {
-	if (watt >= 1000 && wbdata.decimalPlaces < 4) {
+	let wattResult = 0;
+	if (watt > 1000000) {
+		wattResult = (Math.round(watt / 10000) / 100)
+		return (wattResult.toLocaleString(undefined, { minimumFractionDigits: 2 }) + " MWh");
+	} else if (watt >= 1000 && wbdata.decimalPlaces < 4) {
 		switch (wbdata.decimalPlaces) {
 			case 0:
 				wattResult = Math.round(watt / 1000);
@@ -554,6 +573,10 @@ function shiftLeft() {
 			}
 			powerGraph.activateMonth();
 			break;
+		case 'year':
+			wbdata.graphYear = wbdata.graphYear - 1;
+			powerGraph.activateYear();
+			break;
 		default: break;
 	}
 }
@@ -593,6 +616,15 @@ function shiftRight() {
 				}
 				powerGraph.activateMonth();
 			}
+			break;
+		case 'year':
+			if (today.getFullYear() != wbdata.graphYear) { // we are looking at a previous year
+				wbdata.graphYear++;
+				powerGraph.activateYear();
+			}
+			break;
+		default:
+			break;
 	}
 
 }
@@ -654,24 +686,68 @@ function toggleSmartHomeSummary() {
 	wbdata.persistGraphPreferences();
 }
 
+
 function toggleMonthView() {
-	if (wbdata.graphMode == 'month') {
-		wbdata.graphMode = wbdata.graphPreference;
-		if (wbdata.graphPreference == 'live') {
-			powerGraph.activateLive();
+	switch (wbdata.graphMode) {
+		case 'year':
+			wbdata.graphMode = wbdata.graphPreference;
+			if (wbdata.graphPreference == 'live') {
+				powerGraph.activateLive();
+				powerGraph.deactivateMonth();
+			} else {
+				powerGraph.activateDay();
+				powerGraph.deactivateMonth();
+			}
+			break;
+		case 'day':
+		case 'live':
+			wbdata.graphMode = 'month';
+			powerGraph.activateMonth();
+			powerGraph.deactivateDay();
+			powerGraph.deactivateLive();
+			break;
+		case 'month':
+			wbdata.graphMode = 'year';
+			powerGraph.activateYear();
 			powerGraph.deactivateMonth();
-		} else {
-			powerGraph.activateDay();
-			powerGraph.deactivateMonth();
-		}
-	} else {
-		wbdata.graphMode = 'month';
-		powerGraph.activateMonth();
-		powerGraph.deactivateDay();
-		powerGraph.deactivateLive();
+			break;
+		default: break;
 	}
 	yieldMeter.update();
 }
+
+function toggleWideBoxes() {
+	wbdata.preferWideBoxes = !wbdata.preferWideBoxes
+	setWidgetWidth();
+	wbdata.persistGraphPreferences();
+}
+function toggleLandscape() {
+	switch (wbdata.preferredLayout) {
+		case 'dynamic': wbdata.preferredLayout = 'portrait';
+			break;
+		case 'portrait': wbdata.preferredLayout = 'landscape';
+			break;
+		case 'landscape': wbdata.preferredLayout = 'dynamic';
+			break;
+		default: wbdata.preferredLayout = 'dynamic';
+	}
+	setWidgetWidth();
+	wbdata.persistGraphPreferences();
+}
+function setWidgetWidth() {
+	const widgets = d3.selectAll(".var-width")
+	const mainWindows = d3.selectAll(".main-window")
+	widgets.classed("col-lg-4", (!wbdata.preferWideBoxes && wbdata.preferredLayout == 'dynamic'))
+	widgets.classed("col-lg-6", wbdata.preferWideBoxes && wbdata.preferredLayout == 'dynamic')
+	widgets.classed("col-12", wbdata.preferredLayout == 'portrait')
+	widgets.classed("col-4", !wbdata.preferWideBoxes && wbdata.preferredLayout == 'landscape')
+	widgets.classed("col-6", wbdata.preferWideBoxes && wbdata.preferredLayout == 'landscape')
+
+	mainWindows.classed("col-lg-4", wbdata.preferredLayout == 'dynamic')
+	mainWindows.classed("col-12", wbdata.preferredLayout == 'portrait')
+	mainWindows.classed("col-4", wbdata.preferredLayout == 'landscape')
+}
+
 // required for price chart to work
 var evuCol;
 var xgridCol;

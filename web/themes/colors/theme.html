@@ -165,7 +165,7 @@
 		</div>
 		<div class="row p-0 mt-2 mx-0 mb-0 d-flex justify-content-center">
 			<!-- Aktuelle Leistung (powermeter) -->
-			<div class="col-lg-4 p-1 m-0">
+			<div class="col-lg-4 p-1 m-0 main-window">
 				<div class="rounded shadow wb-widget m-0 p-2">
 					<div class="d-flex justify-content-between">
 						<h3 class="mt-0">Aktuelle Leistung</h3>
@@ -189,7 +189,11 @@
 									<a class="dropdown-item" href="#" onclick="switchSmartHomeColors()"><span
 											class="fa fa-palette px-0"></span> Farbschema Smart-Home-Geräte ändern</a>
 									<a class="dropdown-item" href="#" onclick="toggleSmartHomeSummary()"><span
-											class="fa fa-palette px-0"></span> Smarthome-Zusammenfassung an/aus </a>
+											class="fa fa-object-group px-0"></span> Smarthome-Zusammenfassung an/aus </a>
+									<a class="dropdown-item" href="#" onclick="toggleWideBoxes()"><span
+											class="fa fa-window-restore px-0"></span> Breite Widgets an/aus </a>
+									<a class="dropdown-item" href="#" onclick="toggleLandscape()"><span
+											class="fa fa-desktop px-0"></span> Hochformat/Breitformat/dynamisch </a>
 								</div>
 							</div>
 						</div>
@@ -200,7 +204,7 @@
 				</div>
 			</div>
 			<!-- Graph - Live, Tag (powergraph) -->
-			<div class="col-lg-4 m-0 p-1">
+			<div class="col-lg-4 m-0 p-1 main-window">
 				<div class="rounded shadow wb-widget m-0 p-2">
 					<div class="d-flex justify-content-between">
 						<h3 class="mt-0" id="graphheading">Leistung / Ladestand</h3>
@@ -219,7 +223,7 @@
 				</div>
 			</div>
 			<!-- Energie heute (yieldmeter) -->
-			<div class="col-lg-4 p-1 m-0">
+			<div class="col-lg-4 p-1 m-0 main-window">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<div class="d-flex justify-content-between">
 						<h3 id="energyheading" class="mt-0">Energie heute</h3>
@@ -242,7 +246,7 @@
 		</div>
 		<div class="row py-0 m-0 d-flex justify-content-center">
 			<!-- Ladepunkte (chargePointList) -->
-			<div class="col-lg-4 p-1 m-0">
+			<div class="col-lg-4 p-1 m-0 var-width">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<div class="d-flex justify-content-between">
 						<h3 class="mt-0">Ladepunkte</h3>
@@ -257,7 +261,7 @@
 				</div>
 			</div>
 			<!-- Speicher (batteryList) -->
-			<div class="col-lg-4 p-1 m-0" id="batteryWidget">
+			<div class="col-lg-4 p-1 m-0 var-width" id="batteryWidget">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<h3>Speicher</h3>
 					<div class="wb-subwidget p-0 ">
@@ -266,7 +270,7 @@
 				</div>
 			</div>
 			<!-- Smart Home (smartHomeList) -->
-			<div class="col-lg-4 p-1 m-0" id="smartHomeWidget">
+			<div class="col-lg-4 p-1 m-0 var-width" id="smartHomeWidget">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<h3>Geräte</h3>
 					<div class="wb-subwidget p-0 ">
@@ -275,7 +279,7 @@
 				</div>
 			</div>
 			<!-- Preisbasiertes Laden -->
-			<div class="col-lg-4 p-1 m-0 priceConfiguration" id="priceConfigWidget">
+			<div class="col-lg-4 p-1 m-0 priceConfiguration var-width" id="priceConfigWidget">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<h3 class="mt-0">Preisbasiertes Laden</h3>
 					<div class="p-0 wb-subwidget">
@@ -310,7 +314,7 @@
 
 
 			<!-- Ladepunkt Konfig -->
-			<div class="col-lg-4 p-1 m-0" id="chargePointConfigWidget">
+			<div class="col-lg-4 p-1 m-0 var-width" id="chargePointConfigWidget">
 				<div class="wb-widget p-2 m-0 rounded shadow">
 					<h3 class="mt-0">Einstellungen Ladepunkte</h3>
 					<div class="pb-3 wb-subwidget">
